@@ -34,7 +34,7 @@
 #include <webgpu/webgpu.h>
 #include <stdio.h>
 
-int main(int argc, char* argv[]) {
+int main(int, char*[]) {
 	// Init WebGPU
 	WGPUInstanceDescriptor desc;
 	desc.nextInChain = NULL;
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
 
 	// Here we create our WebGPU surface from the window!
 	WGPUSurface surface = SDL_GetWGPUSurface(instance, window);
-	printf("surface = %p", surface);
+	printf("surface = %p", (void*)surface);
 
 	// Wait for close
 	SDL_Event event;

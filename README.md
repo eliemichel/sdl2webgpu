@@ -1,4 +1,4 @@
-<img src="https://github.com/eliemichel/glfw3webgpu/actions/workflows/cmake.yml/badge.svg" alt="CMake Badge" />
+<img src="https://github.com/eliemichel/sdl2webgpu/actions/workflows/cmake.yml/badge.svg" alt="CMake Badge" />
 
 <div align="center">
   <picture>
