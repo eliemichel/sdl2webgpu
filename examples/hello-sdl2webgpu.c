@@ -27,9 +27,8 @@
  * SOFTWARE.
  */
 
-#include "sdl2webgpu.h"
-
 #define SDL_MAIN_HANDLED
+#include "sdl2webgpu.h"
 #include <SDL2/SDL.h>
 #include <webgpu/webgpu.h>
 #include <stdio.h>
