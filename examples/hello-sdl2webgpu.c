@@ -34,7 +34,7 @@
 #include <webgpu/webgpu.h>
 #include <stdio.h>
 
-int main(int, char*[]) {
+int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	// Init WebGPU
 	WGPUInstanceDescriptor desc;
 	desc.nextInChain = NULL;
