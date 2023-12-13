@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
 	desc.nextInChain = NULL;
 	WGPUInstance instance = wgpuCreateInstance(&desc);
 
-	// Init GLFW
+	// Init SDL
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_Window *window = SDL_CreateWindow("Learn WebGPU", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, 0);
 
