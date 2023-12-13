@@ -1,5 +1,5 @@
 /**
- * This is an extension of GLFW for WebGPU, abstracting away the details of
+ * This is an extension of SDL2 for WebGPU, abstracting away the details of
  * OS-specific operations.
  * 
  * This file is part of the "Learn WebGPU for C++" book.
@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
 	desc.nextInChain = NULL;
 	WGPUInstance instance = wgpuCreateInstance(&desc);
 
-	// Init GLFW
+	// Init SDL
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_Window *window = SDL_CreateWindow("Learn WebGPU", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, 0);
 
