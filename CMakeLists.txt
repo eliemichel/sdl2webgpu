@@ -1,6 +1,6 @@
 # This is only meant to be included as a subdirectory in another project.
 # It assumes that targets 'SDL2' and 'webgpu' exist.
-# Loot at examples/CMakeLists.txt to see how to use it in a project.
+# Look at examples/CMakeLists.txt to see how to use it in a project.
 
 # The sdl2webgpu target
 add_library(sdl2webgpu STATIC sdl2webgpu.c)
