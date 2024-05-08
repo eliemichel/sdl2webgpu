@@ -1,5 +1,5 @@
 /**
- * This is an extension of GLFW for WebGPU, abstracting away the details of
+ * This is an extension of SDL2 for WebGPU, abstracting away the details of
  * OS-specific operations.
  * 
  * This file is part of the "Learn WebGPU for C++" book.
@@ -27,8 +27,8 @@
  * SOFTWARE.
  */
 
-#ifndef _glfw3_webgpu_h_
-#define _glfw3_webgpu_h_
+#ifndef _sdl2_webgpu_h_
+#define _sdl2_webgpu_h_
 
 #include <webgpu/webgpu.h>
 #include <SDL2/SDL.h>
@@ -38,7 +38,7 @@ extern "C" {
 #endif
 
 /**
- * Get a WGPUSurface from a GLFW window.
+ * Get a WGPUSurface from a SDL2 window.
  */
 WGPUSurface SDL_GetWGPUSurface(WGPUInstance instance, SDL_Window* window);
 
@@ -46,4 +46,4 @@ WGPUSurface SDL_GetWGPUSurface(WGPUInstance instance, SDL_Window* window);
 }
 #endif
 
-#endif // _glfw3_webgpu_h_
+#endif // _sdl2_webgpu_h_
