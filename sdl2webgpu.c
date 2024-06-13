@@ -99,7 +99,7 @@ WGPUSurface SDL_GetWGPUSurface(WGPUInstance instance, SDL_Window* window) {
 #elif defined(SDL_VIDEO_DRIVER_WAYLAND)
     {
         struct wl_display* wayland_display = windowWMInfo.info.wl.display;
-        struct wl_surface* wayland_surface = windowWMInfo.info.wl.display;
+        struct wl_surface* wayland_surface = windowWMInfo.info.wl.surface;
         return wgpuInstanceCreateSurface(
             instance,
             &(WGPUSurfaceDescriptor){
