@@ -40,6 +40,10 @@
 #include <QuartzCore/CAMetalLayer.h>
 #endif
 
+#if defined(SDL_VIDEO_DRIVER_UIKIT)
+#error "iOS detected. Please, use sdl2webgpu_ios.h"
+#endif
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 
@@ -95,7 +99,7 @@ WGPUSurface SDL_GetWGPUSurface(WGPUInstance instance, SDL_Window* window) {
 #elif defined(SDL_VIDEO_DRIVER_WAYLAND)
     {
         struct wl_display* wayland_display = windowWMInfo.info.wl.display;
-        struct wl_surface* wayland_surface = windowWMInfo.info.wl.surface;
+        struct wl_surface* wayland_surface = windowWMInfo.info.wl.display;
         return wgpuInstanceCreateSurface(
             instance,
             &(WGPUSurfaceDescriptor){
