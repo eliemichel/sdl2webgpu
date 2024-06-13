@@ -41,11 +41,11 @@ Given an SDL window, `SDL_GetWGPUSurface` returns a WebGPU *surface* that corres
 Usage
 -----
 
-Your project must link to an implementation of WebGPU (providing `webgpu.h`) and of course to GLFW. Then:
+Your project must link to an implementation of WebGPU (providing `webgpu.h`) and of course to SDL. Then:
 
 **Option A** If you use CMake, you can simply include this project as a subdirectory with `add_subdirectory(sdl2webgpu)` (see the content of [`CMakeLists.txt`](CMakeLists.txt)).
 
-**Option B** Just copy [`sdl2webgpu.h`](sdl2webgpu.h) and [`sdl2webgpu.c`](sdl2webgpu.c) to your project's source tree. On MacOS, you must add the compile option `-x objective-c` and the link libraries `-framework Cocoa`, `-framework CoreVideo`, `-framework IOKit`, and `-framework QuartzCore`.
+**Option B** Just copy [`sdl2webgpu.h`](sdl2webgpu.h) and [`sdl2webgpu.c`](sdl2webgpu.c) to your project's source tree. On MacOS, you must add the compile option `-x objective-c` and the link libraries `-framework Cocoa`, `-framework CoreVideo`, `-framework IOKit`, and `-framework QuartzCore`. For iOS, do similarly but use `-framework UIKit` instead of `-framework Cocoa`.
 
 Example
 -------
