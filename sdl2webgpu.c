@@ -135,6 +135,19 @@ WGPUSurface SDL_GetWGPUSurface(WGPUInstance instance, SDL_Window* window) {
         },
     });
   }
+#elif defined(SDL_VIDEO_DRIVER_EMSCRIPTEN)
+    {
+        WGPUSurfaceDescriptorFromCanvasHTMLSelector fromCanvasHTMLSelector;
+        fromCanvasHTMLSelector.chain.next = NULL;
+        fromCanvasHTMLSelector.chain.sType = WGPUSType_SurfaceDescriptorFromCanvasHTMLSelector;
+        fromCanvasHTMLSelector.selector = "canvas";
+
+        WGPUSurfaceDescriptor surfaceDescriptor;
+        surfaceDescriptor.nextInChain = &fromCanvasHTMLSelector.chain;
+        surfaceDescriptor.label = NULL;
+
+        return wgpuInstanceCreateSurface(instance, &surfaceDescriptor);
+    }  
 #else
     // TODO: See SDL_syswm.h for other possible enum values!
 #error "Unsupported WGPU_TARGET"

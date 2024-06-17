@@ -41,7 +41,7 @@ Given an SDL window, `SDL_GetWGPUSurface` returns a WebGPU *surface* that corres
 Usage
 -----
 
-Your project must link to an implementation of WebGPU (providing `webgpu.h`) and of course to GLFW. Then:
+Your project must link to an implementation of WebGPU (providing `webgpu.h`) and of course to SDL. Then:
 
 **Option A** If you use CMake, you can simply include this project as a subdirectory with `add_subdirectory(sdl2webgpu)` (see the content of [`CMakeLists.txt`](CMakeLists.txt)).
 
