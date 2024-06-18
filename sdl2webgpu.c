@@ -35,9 +35,14 @@
 #include <webgpu/webgpu.h>
 
 #if defined(SDL_VIDEO_DRIVER_COCOA)
-#include <Cocoa/Cocoa.h>
-#include <Foundation/Foundation.h>
-#include <QuartzCore/CAMetalLayer.h>
+#  include <Cocoa/Cocoa.h>
+#  include <Foundation/Foundation.h>
+#  include <QuartzCore/CAMetalLayer.h>
+#elif defined(SDL_VIDEO_DRIVER_UIKIT)
+#  include <UIKit/UIKit.h>
+#  include <Foundation/Foundation.h>
+#  include <QuartzCore/CAMetalLayer.h>
+#  include <Metal/Metal.h>
 #endif
 
 #include <SDL2/SDL.h>
@@ -52,24 +57,47 @@ WGPUSurface SDL_GetWGPUSurface(WGPUInstance instance, SDL_Window* window) {
     {
         id metal_layer = NULL;
         NSWindow* ns_window = windowWMInfo.info.cocoa.window;
-        [ns_window.contentView setWantsLayer : YES] ;
+        [ns_window.contentView setWantsLayer : YES];
         metal_layer = [CAMetalLayer layer];
-        [ns_window.contentView setLayer : metal_layer] ;
+        [ns_window.contentView setLayer : metal_layer];
         return wgpuInstanceCreateSurface(
             instance,
             &(WGPUSurfaceDescriptor){
-            .label = NULL,
-                .nextInChain =
-                (const WGPUChainedStruct*)&(
-                    WGPUSurfaceDescriptorFromMetalLayer) {
-                .chain =
-                    (WGPUChainedStruct){
+                .label = NULL,
+                .nextInChain = (const WGPUChainedStruct*)&(WGPUSurfaceDescriptorFromMetalLayer) {
+                    .chain = (WGPUChainedStruct){
                         .next = NULL,
                         .sType = WGPUSType_SurfaceDescriptorFromMetalLayer,
+                    },
+                    .layer = metal_layer,
                 },
-                .layer = metal_layer,
-            },
-        });
+            }
+        );
+    }
+#elif defined(SDL_VIDEO_DRIVER_UIKIT)
+    {
+        UIWindow* ui_window = windowWMInfo.info.uikit.window;
+        UIView* ui_view = ui_window.rootViewController.view;
+        CAMetalLayer* metal_layer = [CAMetalLayer new];
+        metal_layer.opaque = true;
+        metal_layer.frame = ui_view.frame;
+        metal_layer.drawableSize = ui_view.frame.size;
+
+        [ui_view.layer addSublayer: metal_layer];
+
+        return wgpuInstanceCreateSurface(
+            instance,
+            &(WGPUSurfaceDescriptor){
+                .label = NULL,
+                .nextInChain = (const WGPUChainedStruct*)&(WGPUSurfaceDescriptorFromMetalLayer) {
+                    .chain = (WGPUChainedStruct){
+                        .next = NULL,
+                        .sType = WGPUSType_SurfaceDescriptorFromMetalLayer,
+                    },
+                    .layer = (__bridge void*)metal_layer,
+                },
+            }
+        );
     }
 #elif defined(SDL_VIDEO_DRIVER_X11)
     {
@@ -78,19 +106,17 @@ WGPUSurface SDL_GetWGPUSurface(WGPUInstance instance, SDL_Window* window) {
         return wgpuInstanceCreateSurface(
             instance,
             &(WGPUSurfaceDescriptor){
-            .label = NULL,
-                .nextInChain =
-                (const WGPUChainedStruct*)&(
-                    WGPUSurfaceDescriptorFromXlibWindow) {
-                .chain =
-                    (WGPUChainedStruct){
+                .label = NULL,
+                .nextInChain = (const WGPUChainedStruct*)&(WGPUSurfaceDescriptorFromXlibWindow) {
+                    .chain = (WGPUChainedStruct){
                         .next = NULL,
                         .sType = WGPUSType_SurfaceDescriptorFromXlibWindow,
+                    },
+                    .display = x11_display,
+                    .window = x11_window,
                 },
-                .display = x11_display,
-                .window = x11_window,
-            },
-        });
+            }
+        );
     }
 #elif defined(SDL_VIDEO_DRIVER_WAYLAND)
     {
@@ -99,21 +125,18 @@ WGPUSurface SDL_GetWGPUSurface(WGPUInstance instance, SDL_Window* window) {
         return wgpuInstanceCreateSurface(
             instance,
             &(WGPUSurfaceDescriptor){
-            .label = NULL,
-                .nextInChain =
-                (const WGPUChainedStruct*)&(
-                    WGPUSurfaceDescriptorFromWaylandSurface) {
-                .chain =
-                    (WGPUChainedStruct){
+                .label = NULL,
+                .nextInChain = (const WGPUChainedStruct*)&(WGPUSurfaceDescriptorFromWaylandSurface) {
+                    .chain = (WGPUChainedStruct){
                         .next = NULL,
-                        .sType =
-                            WGPUSType_SurfaceDescriptorFromWaylandSurface,
-                        },
-                        .display = wayland_display,
-                        .surface = wayland_surface,
+                        .sType = WGPUSType_SurfaceDescriptorFromWaylandSurface,
+                    },
+                    .display = wayland_display,
+                    .surface = wayland_surface,
                 },
-        });
-  }
+            }
+        );
+    }
 #elif defined(SDL_VIDEO_DRIVER_WINDOWS)
     {
         HWND hwnd = windowWMInfo.info.win.window;
@@ -121,20 +144,18 @@ WGPUSurface SDL_GetWGPUSurface(WGPUInstance instance, SDL_Window* window) {
         return wgpuInstanceCreateSurface(
             instance,
             &(WGPUSurfaceDescriptor){
-            .label = NULL,
-                .nextInChain =
-                (const WGPUChainedStruct*)&(
-                    WGPUSurfaceDescriptorFromWindowsHWND) {
-                .chain =
-                    (WGPUChainedStruct){
+                .label = NULL,
+                .nextInChain = (const WGPUChainedStruct*)&(WGPUSurfaceDescriptorFromWindowsHWND) {
+                    .chain = (WGPUChainedStruct){
                         .next = NULL,
                         .sType = WGPUSType_SurfaceDescriptorFromWindowsHWND,
-            },
-            .hinstance = hinstance,
-            .hwnd = hwnd,
-        },
-    });
-  }
+                    },
+                    .hinstance = hinstance,
+                    .hwnd = hwnd,
+                },
+            }
+        );
+    }
 #elif defined(SDL_VIDEO_DRIVER_EMSCRIPTEN)
     {
         WGPUSurfaceDescriptorFromCanvasHTMLSelector fromCanvasHTMLSelector;
