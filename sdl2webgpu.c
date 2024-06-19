@@ -60,19 +60,21 @@ WGPUSurface SDL_GetWGPUSurface(WGPUInstance instance, SDL_Window* window) {
         [ns_window.contentView setWantsLayer : YES];
         metal_layer = [CAMetalLayer layer];
         [ns_window.contentView setLayer : metal_layer];
-        return wgpuInstanceCreateSurface(
-            instance,
-            &(WGPUSurfaceDescriptor){
-                .label = NULL,
-                .nextInChain = (const WGPUChainedStruct*)&(WGPUSurfaceDescriptorFromMetalLayer) {
-                    .chain = (WGPUChainedStruct){
-                        .next = NULL,
-                        .sType = WGPUSType_SurfaceDescriptorFromMetalLayer,
-                    },
-                    .layer = metal_layer,
-                },
-            }
-        );
+
+        WGPUSurfaceDescriptorFromMetalLayer metalLayerDesc = {
+            .chain = {
+                .next = NULL,
+                .sType = WGPUSType_SurfaceDescriptorFromMetalLayer,
+            },
+            .layer = metal_layer,
+        };
+
+        WGPUSurfaceDescriptor surfaceDesc = {
+            .label = NULL,
+            .nextInChain = &metalLayerDesc.chain,
+        };
+
+        return wgpuInstanceCreateSurface(instance, &surfaceDesc);
     }
 #elif defined(SDL_VIDEO_DRIVER_UIKIT)
     {
@@ -85,19 +87,20 @@ WGPUSurface SDL_GetWGPUSurface(WGPUInstance instance, SDL_Window* window) {
 
         [ui_view.layer addSublayer: metal_layer];
 
-        return wgpuInstanceCreateSurface(
-            instance,
-            &(WGPUSurfaceDescriptor){
-                .label = NULL,
-                .nextInChain = (const WGPUChainedStruct*)&(WGPUSurfaceDescriptorFromMetalLayer) {
-                    .chain = (WGPUChainedStruct){
-                        .next = NULL,
-                        .sType = WGPUSType_SurfaceDescriptorFromMetalLayer,
-                    },
-                    .layer = (__bridge void*)metal_layer,
-                },
-            }
-        );
+        WGPUSurfaceDescriptorFromMetalLayer metalLayerDesc = {
+            .chain = {
+                .next = NULL,
+                .sType = WGPUSType_SurfaceDescriptorFromMetalLayer,
+            },
+            .layer = (__bridge void*)metal_layer,
+        };
+
+        WGPUSurfaceDescriptor surfaceDesc = {
+            .label = NULL,
+            .nextInChain = &metalLayerDesc.chain,
+        };
+
+        return wgpuInstanceCreateSurface(instance, &surfaceDesc);
     }
 #elif defined(SDL_VIDEO_DRIVER_X11)
     {
@@ -158,14 +161,18 @@ WGPUSurface SDL_GetWGPUSurface(WGPUInstance instance, SDL_Window* window) {
     }
 #elif defined(SDL_VIDEO_DRIVER_EMSCRIPTEN)
     {
-        WGPUSurfaceDescriptorFromCanvasHTMLSelector fromCanvasHTMLSelector;
-        fromCanvasHTMLSelector.chain.next = NULL;
-        fromCanvasHTMLSelector.chain.sType = WGPUSType_SurfaceDescriptorFromCanvasHTMLSelector;
-        fromCanvasHTMLSelector.selector = "canvas";
+        WGPUSurfaceDescriptorFromCanvasHTMLSelector fromCanvasHTMLSelector = {
+            .chain = {
+                .next = NULL,
+                .sType = WGPUSType_SurfaceDescriptorFromCanvasHTMLSelector,
+            },
+            .selector = "canvas",
+        };
 
-        WGPUSurfaceDescriptor surfaceDescriptor;
-        surfaceDescriptor.nextInChain = &fromCanvasHTMLSelector.chain;
-        surfaceDescriptor.label = NULL;
+        WGPUSurfaceDescriptor surfaceDescriptor = {
+            .label = NULL,
+            .nextInChain = &fromCanvasHTMLSelector.chain,
+        };
 
         return wgpuInstanceCreateSurface(instance, &surfaceDescriptor);
     }  
