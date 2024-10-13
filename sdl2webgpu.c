@@ -61,20 +61,21 @@ WGPUSurface SDL_GetWGPUSurface(WGPUInstance instance, SDL_Window* window) {
         metal_layer = [CAMetalLayer layer];
         [ns_window.contentView setLayer : metal_layer];
 
-        WGPUSurfaceDescriptorFromMetalLayer metalLayerDesc = {
-            .chain = {
-                .next = NULL,
-                .sType = WGPUSType_SurfaceDescriptorFromMetalLayer,
-            },
-            .layer = metal_layer,
-        };
+#  ifdef WEBGPU_BACKEND_DAWN
+        WGPUSurfaceSourceMetalLayer fromMetalLayer;
+        fromMetalLayer.chain.sType = WGPUSType_SurfaceSourceMetalLayer;
+#  else
+        WGPUSurfaceDescriptorFromMetalLayer fromMetalLayer;
+        fromMetalLayer.chain.sType = WGPUSType_SurfaceDescriptorFromMetalLayer;
+#  endif
+        fromMetalLayer.chain.next = NULL;
+        fromMetalLayer.layer = metal_layer;
 
-        WGPUSurfaceDescriptor surfaceDesc = {
-            .label = NULL,
-            .nextInChain = &metalLayerDesc.chain,
-        };
+        WGPUSurfaceDescriptor surfaceDescriptor;
+        surfaceDescriptor.nextInChain = &fromMetalLayer.chain;
+        surfaceDescriptor.label = NULL;
 
-        return wgpuInstanceCreateSurface(instance, &surfaceDesc);
+        return wgpuInstanceCreateSurface(instance, &surfaceDescriptor);
     }
 #elif defined(SDL_VIDEO_DRIVER_UIKIT)
     {
@@ -87,92 +88,103 @@ WGPUSurface SDL_GetWGPUSurface(WGPUInstance instance, SDL_Window* window) {
 
         [ui_view.layer addSublayer: metal_layer];
 
-        WGPUSurfaceDescriptorFromMetalLayer metalLayerDesc = {
-            .chain = {
-                .next = NULL,
-                .sType = WGPUSType_SurfaceDescriptorFromMetalLayer,
-            },
-            .layer = (__bridge void*)metal_layer,
-        };
+#  ifdef WEBGPU_BACKEND_DAWN
+        WGPUSurfaceSourceMetalLayer fromMetalLayer;
+        fromMetalLayer.chain.sType = WGPUSType_SurfaceSourceMetalLayer;
+#  else
+        WGPUSurfaceDescriptorFromMetalLayer fromMetalLayer;
+        fromMetalLayer.chain.sType = WGPUSType_SurfaceDescriptorFromMetalLayer;
+#  endif
+        fromMetalLayer.chain.next = NULL;
+        fromMetalLayer.layer = metal_layer;
 
-        WGPUSurfaceDescriptor surfaceDesc = {
-            .label = NULL,
-            .nextInChain = &metalLayerDesc.chain,
-        };
+        WGPUSurfaceDescriptor surfaceDescriptor;
+        surfaceDescriptor.nextInChain = &fromMetalLayer.chain;
+        surfaceDescriptor.label = NULL;
 
-        return wgpuInstanceCreateSurface(instance, &surfaceDesc);
+        return wgpuInstanceCreateSurface(instance, &surfaceDescriptor);
     }
 #elif defined(SDL_VIDEO_DRIVER_X11)
     {
         Display* x11_display = windowWMInfo.info.x11.display;
         Window x11_window = windowWMInfo.info.x11.window;
-        return wgpuInstanceCreateSurface(
-            instance,
-            &(WGPUSurfaceDescriptor){
-                .label = NULL,
-                .nextInChain = (const WGPUChainedStruct*)&(WGPUSurfaceDescriptorFromXlibWindow) {
-                    .chain = (WGPUChainedStruct){
-                        .next = NULL,
-                        .sType = WGPUSType_SurfaceDescriptorFromXlibWindow,
-                    },
-                    .display = x11_display,
-                    .window = x11_window,
-                },
-            }
-        );
+
+#  ifdef WEBGPU_BACKEND_DAWN
+        WGPUSurfaceSourceXlibWindow fromXlibWindow;
+        fromXlibWindow.chain.sType = WGPUSType_SurfaceSourceXlibWindow;
+#  else
+        WGPUSurfaceDescriptorFromXlibWindow fromXlibWindow;
+        fromXlibWindow.chain.sType = WGPUSType_SurfaceDescriptorFromXlibWindow;
+#  endif
+        fromXlibWindow.chain.next = NULL;
+        fromXlibWindow.display = x11_display;
+        fromXlibWindow.window = x11_window;
+
+        WGPUSurfaceDescriptor surfaceDescriptor;
+        surfaceDescriptor.nextInChain = &fromXlibWindow.chain;
+        surfaceDescriptor.label = NULL;
+
+        return wgpuInstanceCreateSurface(instance, &surfaceDescriptor);
     }
 #elif defined(SDL_VIDEO_DRIVER_WAYLAND)
     {
         struct wl_display* wayland_display = windowWMInfo.info.wl.display;
         struct wl_surface* wayland_surface = windowWMInfo.info.wl.surface;
-        return wgpuInstanceCreateSurface(
-            instance,
-            &(WGPUSurfaceDescriptor){
-                .label = NULL,
-                .nextInChain = (const WGPUChainedStruct*)&(WGPUSurfaceDescriptorFromWaylandSurface) {
-                    .chain = (WGPUChainedStruct){
-                        .next = NULL,
-                        .sType = WGPUSType_SurfaceDescriptorFromWaylandSurface,
-                    },
-                    .display = wayland_display,
-                    .surface = wayland_surface,
-                },
-            }
-        );
+
+#  ifdef WEBGPU_BACKEND_DAWN
+        WGPUSurfaceSourceWaylandSurface fromWaylandSurface;
+        fromWaylandSurface.chain.sType = WGPUSType_SurfaceSourceWaylandSurface;
+#  else
+        WGPUSurfaceDescriptorFromWaylandSurface fromWaylandSurface;
+        fromWaylandSurface.chain.sType = WGPUSType_SurfaceDescriptorFromWaylandSurface;
+#  endif
+        fromWaylandSurface.chain.next = NULL;
+        fromWaylandSurface.display = wayland_display;
+        fromWaylandSurface.surface = wayland_surface;
+
+        WGPUSurfaceDescriptor surfaceDescriptor;
+        surfaceDescriptor.nextInChain = &fromWaylandSurface.chain;
+        surfaceDescriptor.label = NULL;
+
+        return wgpuInstanceCreateSurface(instance, &surfaceDescriptor);
     }
 #elif defined(SDL_VIDEO_DRIVER_WINDOWS)
     {
         HWND hwnd = windowWMInfo.info.win.window;
         HINSTANCE hinstance = GetModuleHandle(NULL);
-        return wgpuInstanceCreateSurface(
-            instance,
-            &(WGPUSurfaceDescriptor){
-                .label = NULL,
-                .nextInChain = (const WGPUChainedStruct*)&(WGPUSurfaceDescriptorFromWindowsHWND) {
-                    .chain = (WGPUChainedStruct){
-                        .next = NULL,
-                        .sType = WGPUSType_SurfaceDescriptorFromWindowsHWND,
-                    },
-                    .hinstance = hinstance,
-                    .hwnd = hwnd,
-                },
-            }
-        );
+
+#  ifdef WEBGPU_BACKEND_DAWN
+        WGPUSurfaceSourceWindowsHWND fromWindowsHWND;
+        fromWindowsHWND.chain.sType = WGPUSType_SurfaceSourceWindowsHWND;
+#  else
+        WGPUSurfaceDescriptorFromWindowsHWND fromWindowsHWND;
+        fromWindowsHWND.chain.sType = WGPUSType_SurfaceDescriptorFromWindowsHWND;
+#  endif
+        fromWindowsHWND.chain.next = NULL;
+        fromWindowsHWND.hinstance = hinstance;
+        fromWindowsHWND.hwnd = hwnd;
+
+        WGPUSurfaceDescriptor surfaceDescriptor;
+        surfaceDescriptor.nextInChain = &fromWindowsHWND.chain;
+        surfaceDescriptor.label = NULL;
+
+        return wgpuInstanceCreateSurface(instance, &surfaceDescriptor);
     }
 #elif defined(SDL_VIDEO_DRIVER_EMSCRIPTEN)
     {
-        WGPUSurfaceDescriptorFromCanvasHTMLSelector fromCanvasHTMLSelector = {
-            .chain = {
-                .next = NULL,
-                .sType = WGPUSType_SurfaceDescriptorFromCanvasHTMLSelector,
-            },
-            .selector = "canvas",
-        };
+#  ifdef WEBGPU_BACKEND_DAWN
+        WGPUSurfaceSourceCanvasHTMLSelector_Emscripten fromCanvasHTMLSelector;
+        fromCanvasHTMLSelector.chain.sType = WGPUSType_SurfaceSourceCanvasHTMLSelector_Emscripten;
+#  else
+        WGPUSurfaceDescriptorFromCanvasHTMLSelector fromCanvasHTMLSelector;
+        fromCanvasHTMLSelector.chain.sType = WGPUSType_SurfaceDescriptorFromCanvasHTMLSelector;
+#  endif
+        fromCanvasHTMLSelector.chain.next = NULL;
+        fromCanvasHTMLSelector.selector = "canvas";
 
-        WGPUSurfaceDescriptor surfaceDescriptor = {
-            .label = NULL,
-            .nextInChain = &fromCanvasHTMLSelector.chain,
-        };
+        WGPUSurfaceDescriptor surfaceDescriptor;
+        surfaceDescriptor.nextInChain = &fromCanvasHTMLSelector.chain;
+        surfaceDescriptor.label = NULL;
 
         return wgpuInstanceCreateSurface(instance, &surfaceDescriptor);
     }  

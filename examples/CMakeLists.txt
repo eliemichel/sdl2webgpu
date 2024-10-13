@@ -13,8 +13,8 @@ FetchContent_Declare(
 )
 FetchContent_Declare(
   webgpu
-  GIT_REPOSITORY https://github.com/eliemichel/WebGPU-binaries.git
-  GIT_TAG        main
+  GIT_REPOSITORY https://github.com/eliemichel/WebGPU-distribution.git
+  GIT_TAG        7ed61fb96d972a4c61ccc79af1139eba2a0ce4c4  # fetch
 )
 FetchContent_MakeAvailable(sdl2 webgpu)
 
@@ -25,6 +25,7 @@ add_subdirectory(.. sdl2webgpu)
 
 # Example
 add_executable(hello-sdl2webgpu hello-sdl2webgpu.c)
-target_link_libraries(hello-sdl2webgpu PRIVATE SDL2::SDL2 webgpu sdl2webgpu)
+target_link_libraries(hello-sdl2webgpu PRIVATE SDL2::SDL2-static webgpu sdl2webgpu)
+set_target_properties(hello-sdl2webgpu PROPERTIES CXX_STANDARD 17)
 target_treat_all_warnings_as_errors(hello-sdl2webgpu)
 target_copy_webgpu_binaries(hello-sdl2webgpu)
