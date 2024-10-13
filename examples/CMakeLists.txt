@@ -14,7 +14,7 @@ FetchContent_Declare(
 FetchContent_Declare(
   webgpu
   GIT_REPOSITORY https://github.com/eliemichel/WebGPU-distribution.git
-  GIT_TAG        7ed61fb96d972a4c61ccc79af1139eba2a0ce4c4  # fetch
+  GIT_TAG        479541d24699fddb60a903da081203bdbe4735a7  # fetch
 )
 FetchContent_MakeAvailable(sdl2 webgpu)
 
