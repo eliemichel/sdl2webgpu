@@ -25,7 +25,20 @@ add_subdirectory(.. sdl2webgpu)
 
 # Example
 add_executable(hello-sdl2webgpu hello-sdl2webgpu.c)
-target_link_libraries(hello-sdl2webgpu PRIVATE SDL2::SDL2-static webgpu sdl2webgpu)
+target_link_libraries(hello-sdl2webgpu PRIVATE SDL2::SDL2 webgpu sdl2webgpu)
 set_target_properties(hello-sdl2webgpu PROPERTIES CXX_STANDARD 17)
 target_treat_all_warnings_as_errors(hello-sdl2webgpu)
+
+# Copy wgpu-native or Dawn dll/so/dylib next to the executable
 target_copy_webgpu_binaries(hello-sdl2webgpu)
+
+# Copy SDL2.dll/so/dylib next to the executable
+add_custom_command(
+  TARGET hello-sdl2webgpu
+  POST_BUILD
+  COMMAND
+    ${CMAKE_COMMAND}
+    -E copy_if_different
+    $<TARGET_FILE:SDL2::SDL2>
+    $<TARGET_FILE_DIR:hello-sdl2webgpu>
+)

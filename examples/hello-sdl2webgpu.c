@@ -52,10 +52,11 @@ int main(int argc, char* argv[]) {
 
 	// Wait for close
 	SDL_Event event;
-	while (1)
+	int running = 1;
+	while (running)
 		while (SDL_PollEvent(&event))
 			if (event.type == SDL_QUIT)
-				break;
+				running = 0;
 	// Terminate SDL
 	SDL_DestroyWindow(window);
 	SDL_Quit();
