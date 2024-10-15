@@ -9,6 +9,7 @@ include(utils.cmake)
 if (EMSCRIPTEN)
 
   add_library(SDL2_SDL2 INTERFACE)
+  target_compile_options(SDL2_SDL2 INTERFACE --use-port=sdl2)
   target_link_options(SDL2_SDL2 INTERFACE --use-port=sdl2)
   add_library(SDL2::SDL2 ALIAS SDL2_SDL2)
   function(target_copy_sdl2_binaries)

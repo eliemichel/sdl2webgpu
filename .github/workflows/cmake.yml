@@ -103,7 +103,7 @@ jobs:
       if: ${{ matrix.msystem }}
       shell: msys2 {0}
       run: >
-        cmake
+        ${{ matrix.cmake-wrapper }} cmake
         -S examples
         -B build
         -DWEBGPU_BACKEND=${{ matrix.webgpu-backend }}
