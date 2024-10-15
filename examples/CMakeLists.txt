@@ -61,4 +61,4 @@ target_treat_all_warnings_as_errors(hello-sdl2webgpu)
 # Copy wgpu-native or Dawn dll/so/dylib next to the executable
 target_copy_webgpu_binaries(hello-sdl2webgpu)
 # Copy SDL2.dll/so/dylib next to the executable
-target_copy_sdl2_binaries(hello-sdl3webgpu)
+target_copy_sdl2_binaries(hello-sdl2webgpu)
