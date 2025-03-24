@@ -25,12 +25,12 @@ else()
   FetchContent_Declare(
     sdl2
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG        release-2.28.5
+    GIT_TAG        release-2.32.2
   )
   FetchContent_Declare(
     webgpu
     GIT_REPOSITORY https://github.com/eliemichel/WebGPU-distribution.git
-    GIT_TAG        479541d24699fddb60a903da081203bdbe4735a7  # fetch
+    GIT_TAG        main-v0.3.0-alpha
   )
   FetchContent_MakeAvailable(sdl2 webgpu)
 
