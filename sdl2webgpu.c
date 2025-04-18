@@ -9,7 +9,7 @@
  *   https://github.com/gfx-rs/wgpu-native/blob/master/examples/triangle/main.c
  * 
  * MIT License
- * Copyright (c) 2022-2023 Elie Michel and the wgpu-native authors
+ * Copyright (c) 2022-2025 Elie Michel and the wgpu-native authors
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -147,8 +147,13 @@ WGPUSurface SDL_GetWGPUSurface(WGPUInstance instance, SDL_Window* window) {
     }
 #elif defined(SDL_VIDEO_DRIVER_EMSCRIPTEN)
     {
+#  ifdef WEBGPU_BACKEND_EMDAWNWEBGPU
+        WGPUEmscriptenSurfaceSourceCanvasHTMLSelector fromCanvasHTMLSelector;
+        fromCanvasHTMLSelector.chain.sType = WGPUSType_EmscriptenSurfaceSourceCanvasHTMLSelector;
+#  else
         WGPUSurfaceDescriptorFromCanvasHTMLSelector fromCanvasHTMLSelector;
         fromCanvasHTMLSelector.chain.sType = WGPUSType_SurfaceDescriptorFromCanvasHTMLSelector;
+#  endif
         fromCanvasHTMLSelector.chain.next = NULL;
         fromCanvasHTMLSelector.selector = "canvas";
 
